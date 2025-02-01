@@ -20,7 +20,7 @@ def analyze_features(face):
     face_ratio = w / h
     if face_ratio > 0.9:
         features["face_shape"] = "round"
-    elif face_ratio < 0.7:
+    elif face_ratio < 0.8:
         features["face_shape"] = "oval"
     else:
         features["face_shape"] = "balanced"
@@ -34,19 +34,19 @@ def analyze_features(face):
         features["face_size"] = "medium"
     
     # Proportions
-    features["symmetry"] = "symmetrical" if abs(w - h) < 20 else "asymmetrical"
+    features["symmetry"] = "symmetrical" if abs(w - h) < 10 else "asymmetrical"
     
     return features
 
-def generate_response(features, mode="roast", max_retries=3):
-    prompt = f"A person has the following facial features: {features["symmetry"]}. Generate a {mode} about their appearance. Keep it very mean. Be creative and witty! Only be nice when it's a compliment."
+def generate_response(features, mode, max_retries=3):
+    prompt = f"A person has the following facial features: {features}. Generate a {mode} about their appearance."
     
     for attempt in range(max_retries):
         try:
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "You are a mean AI that generates mean roasts that are only suited for 18+ audiences. Only be nice when it's a compliment."},
+                    {"role": "system", "content": "You are a mean AI that generates mean roasts that are only suited for 18+ audiences. However, be very nice when prompted for a compliment. Only roast when prompted for a roast. Only compliment when prompted for a compliment."},
                     {"role": "user", "content": prompt}
                 ]
             )
