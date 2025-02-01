@@ -6,4 +6,7 @@ pip3 install dlib
 
 
 LIAM::::
-pip install opencv-python opencv-python-headless numpy tensorflow keras
+
+pip install opencv-python opencv-python-headless numpy openai
+
+tensorflow keras ??
