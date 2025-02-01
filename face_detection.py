@@ -39,14 +39,14 @@ def analyze_features(face):
     return features
 
 def generate_response(features, mode="roast", max_retries=3):
-    prompt = f"A person has the following facial features: {features}. Generate a {mode} about their appearance. Keep it very mean. Be creative and witty!"
+    prompt = f"A person has the following facial features: {features["symmetry"]}. Generate a {mode} about their appearance. Keep it very mean. Be creative and witty! Only be nice when it's a compliment."
     
     for attempt in range(max_retries):
         try:
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "You are a mean AI that generates mean roasts that are only suited for 18+ audiences."},
+                    {"role": "system", "content": "You are a mean AI that generates mean roasts that are only suited for 18+ audiences. Only be nice when it's a compliment."},
                     {"role": "user", "content": prompt}
                 ]
             )
