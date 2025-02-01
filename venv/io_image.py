@@ -1,12 +1,26 @@
-import os
-
 import cv2
+import dlib
 
-#read image
-image_path = os.path.join('.', 'data', 'bird.jpg')
+# Initialize webcam and face detector
+cap = cv2.VideoCapture(0)
+detector = dlib.get_frontal_face_detector()
 
-img = cv2.imread(image_path)
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
 
-#write image
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    faces = detector(gray)
 
-cv2.imwrite(os.path.join('.', 'data', 'bird_out.jpg'), img)
+    for face in faces:
+        x, y, w, h = face.left(), face.top(), face.width(), face.height()
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+    cv2.imshow("Self-Roasting App", frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
