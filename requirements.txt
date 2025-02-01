@@ -1,3 +1,10 @@
+YASIN:
 opencv-python dlib numpy imutils torch transformers
 cmake
 dlib
+LIAM:
+install opencv-python opencv-python-headless numpy openai
+tensorflow keras ??
+Model:
+https://github.com/opencv/opencv/tree/master/data/haarcascades_cuda
+
