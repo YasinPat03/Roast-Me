@@ -1,13 +1,13 @@
-pip3 install opencv-python dlib numpy imutils torch transformers
-brew install cmake
-pip3 install dlib
+opencv-python dlib numpy imutils torch transformers
+cmake
+dlib
 
 
 
 
 LIAM::::
 
-pip install opencv-python opencv-python-headless numpy openai
+install opencv-python opencv-python-headless numpy openai
 
 tensorflow keras ??
 
