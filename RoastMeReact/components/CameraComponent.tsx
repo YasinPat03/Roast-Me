@@ -1,18 +1,21 @@
+// CameraComponent.tsx
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function App() {
+interface CameraComponentProps {
+  onPhotoTaken: (uri: string) => void;
+}
+
+export default function CameraComponent({ onPhotoTaken }: CameraComponentProps) {
   const [facing, setFacing] = useState('back');
   const [permission, requestPermission] = useCameraPermissions();
 
   if (!permission) {
-    // Camera permissions are still loading.
     return <View />;
   }
 
   if (!permission.granted) {
-    // Camera permissions are not granted yet.
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
@@ -30,7 +33,7 @@ export default function App() {
       <CameraView style={styles.camera} facing={facing}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip Camera</Text>
+            <Text style={styles.text}>Flip</Text>
           </TouchableOpacity>
         </View>
       </CameraView>
@@ -41,25 +44,23 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
   },
   camera: {
     flex: 1,
   },
   buttonContainer: {
-    flex: 1,
     flexDirection: 'row',
     backgroundColor: 'transparent',
-    margin: 64,
+    margin: 20,
+    justifyContent: 'flex-end',
   },
   button: {
-    flex: 1,
-    alignSelf: 'flex-end',
-    alignItems: 'center',
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   text: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 16,
     color: 'white',
   },
 });
