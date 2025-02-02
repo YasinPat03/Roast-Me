@@ -3,24 +3,10 @@ const modeSwitch = document.getElementById("modeSwitch");
 const modeTitle = document.getElementById("modeTitle");
 const actionBtn = document.getElementById("actionBtn");
 const responseText = document.getElementById("responseText");
-const cameraError = document.getElementById("cameraError");
-
-const roastSound = new Audio("audio.wav");
-const complimentSound = new Audio("audio.wav");
+const voiceToggle = document.getElementById("voiceToggle");
 
 let isRoastMode = true;
-
-// Access the user's camera and display video feed
-navigator.mediaDevices
-    .getUserMedia({ video: { facingMode: "user" } })
-    .then((stream) => {
-        video.srcObject = stream;
-        cameraError.style.display = "none"; // Hide error if successful
-    })
-    .catch((err) => {
-        console.error("Error accessing the camera: ", err);
-        cameraError.style.display = "block"; // Show error message
-    });
+let isVoiceEnabled = true; // Default: Voice enabled
 
 // Roasts & Compliments Data
 const roasts = [
@@ -43,8 +29,28 @@ function generateResponse(type) {
 
     responseText.textContent = response;
 
-    if (type === "roast") roastSound.play();
-    else complimentSound.play();
+    // Call AI Voice Function only if voice is enabled
+    if (isVoiceEnabled) {
+        speakText(response, type);
+    }
+}
+
+// Function to use Google TTS API (Built-in Web Speech API)
+function speakText(text, type) {
+    const synth = window.speechSynthesis;
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    // Select different voices based on mode
+    const voices = synth.getVoices();
+    utterance.voice = voices.find(voice => 
+        type === "roast" ? voice.name.includes("Daniel") : voice.name.includes("Samantha")
+    ) || voices[0];
+
+    utterance.rate = 1; // Speed
+    utterance.pitch = type === "roast" ? 0.8 : 1.2; // Lower pitch for roasts, higher for compliments
+    utterance.volume = 1;
+
+    synth.speak(utterance);
 }
 
 // Toggle Roast/Compliment Mode
@@ -66,6 +72,18 @@ function toggleMode() {
     }
 }
 
+// Toggle Voice Feature
+function toggleVoice() {
+    isVoiceEnabled = !isVoiceEnabled;
+    voiceToggle.textContent = isVoiceEnabled ? "🔊 Voice On" : "🔇 Voice Off";
+}
+
 // Event Listeners
 modeSwitch.addEventListener("click", toggleMode);
 actionBtn.addEventListener("click", () => generateResponse(isRoastMode ? "roast" : "compliment"));
+voiceToggle.addEventListener("click", toggleVoice);
+
+// Ensure voices are loaded properly
+window.speechSynthesis.onvoiceschanged = () => {
+    console.log("Voices loaded:", window.speechSynthesis.getVoices());
+};

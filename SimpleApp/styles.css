@@ -35,7 +35,7 @@ body {
 
 .container {
     width: 700px;
-    max-width: 95%;
+    max-width: 90%;
     background: var(--container-bg);
     padding: 40px;
     border-radius: 15px;
@@ -72,10 +72,11 @@ h1 {
     margin-bottom: 20px;
 }
 
-/* Larger Camera Area with Glow Effect */
+/* Camera Area with Responsive Scaling */
 .camera-container {
     width: 100%;
-    height: 500px;
+    height: 450px;
+    max-height: 60vh;
     overflow: hidden;
     border-radius: 10px;
     background: black;
@@ -125,6 +126,7 @@ button {
     background-color: var(--button-bg);
     color: white;
     width: 80%;
+    max-width: 300px;
 }
 
 button:hover {
@@ -138,4 +140,30 @@ button:hover {
     background: var(--response-bg);
     border-radius: 10px;
     font-size: 18px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+        padding: 30px;
+    }
+
+    .camera-container {
+        height: 40vh;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    button {
+        font-size: 16px;
+        padding: 12px;
+        width: 90%;
+    }
+
+    .response-box {
+        font-size: 16px;
+    }
 }
