@@ -6,7 +6,7 @@ from openai import OpenAI
 import time
 
 # Project Files
-from face_measurements import FaceMeasurements # Make sure class name matches
+from face_measurements import FaceMeasurements
 from face_analyzer import FaceAnalyzer
 from config import OPENAI_API_KEY
 
@@ -31,11 +31,33 @@ while True:
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = detector(gray, 0)
 
+    # Always display the current message
+    words = current_message.split()
+    y_position = 30
+    line = []
+    
+    for word in words:
+        line.append(word)
+        if len(' '.join(line)) > 40:
+            cv2.putText(frame, ' '.join(line), (10, y_position), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+            y_position += 30
+            line = []
+            
+    if line:
+        cv2.putText(frame, ' '.join(line), (10, y_position), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+
     for face in faces:
         shape = predictor(gray, face)
         shape = face_utils.shape_to_np(shape)
 
-        # Landmark visualization
+        # Draw red rectangle around the face
+        x, y = face.left(), face.top()
+        w, h = face.width(), face.height()
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
+        # Landmarks visualization
         for i, (x, y) in enumerate(shape):
             if indices_b:
                 cv2.putText(frame, str(i), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 1)
@@ -63,27 +85,9 @@ while True:
                 last_request_time = current_time
             except Exception as e:
                 current_message = f"Error: {str(e)}"
-        # Display the current message
-        words = current_message.split()
-        y_position = 30
-        line = []
-        
-        for word in words:
-            line.append(word)
-            if len(' '.join(line)) > 40:  # Line wrapping
-                cv2.putText(frame, ' '.join(line), (10, y_position), 
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-                y_position += 30
-                line = []
-                
-        if line:  # Print any remaining words
-            cv2.putText(frame, ' '.join(line), (10, y_position), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
-    # Display the frame
     cv2.imshow("Face Landmarks", frame)
 
-    # Key handling
     key = cv2.waitKey(1) & 0xFF
     
     if key == ord('x'):
