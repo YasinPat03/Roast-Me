@@ -5,7 +5,8 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 
 export default function HomeScreen() {
-  const [showCamera, setShowCamera] = useState(false);
+  // Initialize showCamera as true to show camera on boot
+  const [showCamera, setShowCamera] = useState(true);
   
   const handlePhotoTaken = (uri: string) => {
     console.log('Photo taken:', uri);
@@ -29,8 +30,7 @@ export default function HomeScreen() {
       <ThemedText style={styles.title}>Welcome</ThemedText>
       <Pressable 
         style={styles.button}
-        onPress={() => setShowCamera(true)}
-      >
+        onPress={() => setShowCamera(true)}>
         <Text style={styles.buttonText}>Open Camera</Text>
       </Pressable>
     </ThemedView>
