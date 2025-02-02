@@ -3,6 +3,15 @@ class FaceAnalyzer:
         """
         Initialize with expanded thresholds for facial features and emotions
         """
+        # Distance-based personality indicators (in cm)
+        self.distance_thresholds = {
+            'very_close': 30,    # Less than 30cm: very confident/intimate
+            'close': 45,         # 30-45cm: confident
+            'medium': 60,        # 45-60cm: neutral
+            'far': 80,          # 60-80cm: slightly reserved
+            'very_far': float('inf')  # >80cm: shy/reserved
+        }
+
         self.thresholds = {
             # Basic Features
             'nose_width': {
@@ -74,7 +83,8 @@ class FaceAnalyzer:
 
     def analyze_face(self, measurements):
         """
-        Enhanced analysis of facial measurements returning detailed features and emotions
+        Enhanced analysis of facial measurements returning detailed features, emotions,
+        and distance-based personality traits
         """
         features = {}
         
@@ -106,6 +116,9 @@ class FaceAnalyzer:
         
         # Personality Traits (based on facial features)
         features['personality_indicators'] = self._analyze_personality(features)
+        
+        # Distance-based personality analysis
+        features['distance_personality'] = self._analyze_distance_personality(measurements.distance)
         
         return features
 
@@ -167,6 +180,33 @@ class FaceAnalyzer:
             'confidence': primary_emotion[1]
         }
 
+    def _analyze_distance_personality(self, distance):
+        """
+        Analyze personality traits based on camera distance
+        Returns both the distance category and associated personality traits
+        """
+        # Determine distance category
+        category = "very_far"
+        for dist_category, threshold in self.distance_thresholds.items():
+            if distance < threshold:
+                category = dist_category
+                break
+        
+        # Associate personality traits with distance
+        personality_traits = {
+            'very_close': ['outgoing', 'confident', 'dominant'],
+            'close': ['friendly', 'engaging', 'assertive'],
+            'medium': ['balanced', 'comfortable', 'neutral'],
+            'far': ['reserved', 'thoughtful', 'careful'],
+            'very_far': ['shy', 'introverted', 'observant']
+        }
+        
+        return {
+            'category': category,
+            'distance_cm': distance,
+            'traits': personality_traits[category]
+        }
+
     def _analyze_personality(self, features):
         """
         Infer potential personality traits based on facial features
@@ -207,7 +247,9 @@ class FaceAnalyzer:
             - Mouth: {features['mouth_state']}
             - Symmetry: {features['symmetry']}
             - Current emotion: {features['emotion']['primary']} (confidence: {features['emotion']['confidence']:.2f})
-            - Personality indicators: {', '.join(features['personality_indicators'])}"""
+            - Distance: {features['distance_personality']['category']} ({features['distance_personality']['distance_cm']:.1f}cm)
+            - Personality indicators: {', '.join(features['personality_indicators'])}
+            - Distance-based traits: {', '.join(features['distance_personality']['traits'])}"""
 
         else:  # compliment mode
             system_prompt = """You are a genuine compliment generator that creates kind, specific compliments based on facial features and emotional state.
