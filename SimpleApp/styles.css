@@ -45,7 +45,7 @@ body {
     transition: background-color 0.5s ease-in-out, transform 0.3s ease-in-out;
 }
 
-/* Mode Button is attached inside the frame */
+/* Mode Toggle Button */
 .mode-toggle {
     position: absolute;
     top: 10px;
@@ -55,10 +55,10 @@ body {
 .mode-toggle button {
     background: var(--mode-button-bg);
     color: white;
-    padding: 10px 15px;
+    padding: 8px 12px;
     border: none;
-    border-radius: 8px;
-    font-size: 24px;
+    border-radius: 6px;
+    font-size: 20px;
     cursor: pointer;
     transition: 0.3s;
 }
@@ -72,7 +72,7 @@ h1 {
     margin-bottom: 20px;
 }
 
-/* Camera Area with Responsive Scaling */
+/* Camera Area */
 .camera-container {
     width: 100%;
     height: 450px;
@@ -115,18 +115,19 @@ video {
     margin: 20px 0;
 }
 
+/* Main Buttons */
 button {
-    padding: 15px 20px;
+    padding: 12px 18px;
     margin: 10px;
     border: none;
     border-radius: 10px;
-    font-size: 18px;
+    font-size: 16px;
     cursor: pointer;
     transition: 0.3s;
     background-color: var(--button-bg);
     color: white;
-    width: 80%;
-    max-width: 300px;
+    width: 75%;
+    max-width: 280px;
 }
 
 button:hover {
@@ -142,7 +143,28 @@ button:hover {
     font-size: 18px;
 }
 
-/* Responsive adjustments */
+/* Voice Toggle Button (Small & Matches Response Box) */
+.toggle-container {
+    margin-top: 10px;
+}
+
+#voiceToggle {
+    background: var(--response-bg);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    padding: 2px 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+#voiceToggle:hover {
+    opacity: 0.8;
+}
+
+/* Responsive Adjustments */
 @media (max-width: 768px) {
     .container {
         width: 95%;
@@ -158,12 +180,17 @@ button:hover {
     }
 
     button {
-        font-size: 16px;
-        padding: 12px;
+        font-size: 14px;
+        padding: 10px;
         width: 90%;
     }
 
     .response-box {
         font-size: 16px;
+    }
+
+    #voiceToggle {
+        font-size: 12px;
+        padding: 2px 5px;
     }
 }

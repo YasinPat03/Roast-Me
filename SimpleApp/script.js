@@ -8,6 +8,13 @@ const voiceToggle = document.getElementById("voiceToggle");
 let isRoastMode = true;
 let isVoiceEnabled = true; // Default: Voice enabled
 
+// ElevenLabs API Key (Do NOT expose this in front-end)
+const API_KEY = "sk_0301a5e5ab5c39edfe24616ecda9ba2e7a9f11af617ebf5d";
+
+// ElevenLabs Voice IDs (Choose the ones you prefer)
+const ROAST_VOICE_ID = "EXAVITQu4vr4xnSDxMaL"; // Example male deep voice
+const COMPLIMENT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // Example soft female voice
+
 // Roasts & Compliments Data
 const roasts = [
     "You bring everyone so much joy... when you leave the room!",
@@ -31,26 +38,47 @@ function generateResponse(type) {
 
     // Call AI Voice Function only if voice is enabled
     if (isVoiceEnabled) {
-        speakText(response, type);
+        generateAIVoice(response, type);
     }
 }
 
-// Function to use Google TTS API (Built-in Web Speech API)
-function speakText(text, type) {
-    const synth = window.speechSynthesis;
-    const utterance = new SpeechSynthesisUtterance(text);
+// Function to generate AI voice from ElevenLabs
+async function generateAIVoice(text, type) {
+    const voiceId = type === "roast" ? ROAST_VOICE_ID : COMPLIMENT_VOICE_ID;
+    
+    try {
+        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "xi-api-key": API_KEY
+            },
+            body: JSON.stringify({
+                text: text,
+                model_id: "eleven_monolingual_v1",
+                voice_settings: {
+                    stability: 0.5,
+                    similarity_boost: 0.8
+                }
+            })
+        });
 
-    // Select different voices based on mode
-    const voices = synth.getVoices();
-    utterance.voice = voices.find(voice => 
-        type === "roast" ? voice.name.includes("Daniel") : voice.name.includes("Samantha")
-    ) || voices[0];
+        if (!response.ok) {
+            throw new Error("Failed to generate TTS");
+        }
 
-    utterance.rate = 1; // Speed
-    utterance.pitch = type === "roast" ? 0.8 : 1.2; // Lower pitch for roasts, higher for compliments
-    utterance.volume = 1;
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        playAudio(audioUrl);
+    } catch (error) {
+        console.error("Error with AI voice request", error);
+    }
+}
 
-    synth.speak(utterance);
+// Function to play AI-generated audio
+function playAudio(audioUrl) {
+    const audio = new Audio(audioUrl);
+    audio.play();
 }
 
 // Toggle Roast/Compliment Mode
@@ -82,8 +110,3 @@ function toggleVoice() {
 modeSwitch.addEventListener("click", toggleMode);
 actionBtn.addEventListener("click", () => generateResponse(isRoastMode ? "roast" : "compliment"));
 voiceToggle.addEventListener("click", toggleVoice);
-
-// Ensure voices are loaded properly
-window.speechSynthesis.onvoiceschanged = () => {
-    console.log("Voices loaded:", window.speechSynthesis.getVoices());
-};
