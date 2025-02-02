@@ -8,12 +8,14 @@ const voiceToggle = document.getElementById("voiceToggle");
 let isRoastMode = true;
 let isVoiceEnabled = true; // Default: Voice enabled
 
-// ElevenLabs API Key (Do NOT expose this in front-end)
+// ElevenLabs API Key (Use a backend proxy for security!)
 const API_KEY = "sk_0301a5e5ab5c39edfe24616ecda9ba2e7a9f11af617ebf5d";
 
-// ElevenLabs Voice IDs (Choose the ones you prefer)
-const ROAST_VOICE_ID = "EXAVITQu4vr4xnSDxMaL"; // Example male deep voice
-const COMPLIMENT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // Example soft female voice
+// ElevenLabs Voice IDs
+const ROAST_VOICE_ID = "EXAVITQu4vr4xnSDxMaL"; // Deep male voice for roasts
+const COMPLIMENT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // Soft female voice for compliments
+
+let currentAudio = null; // Track current audio to prevent duplicates
 
 // Roasts & Compliments Data
 const roasts = [
@@ -35,6 +37,12 @@ function generateResponse(type) {
     const response = list[randomIndex];
 
     responseText.textContent = response;
+
+    // Stop any currently playing voice
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+    }
 
     // Call AI Voice Function only if voice is enabled
     if (isVoiceEnabled) {
@@ -75,10 +83,15 @@ async function generateAIVoice(text, type) {
     }
 }
 
-// Function to play AI-generated audio
+// Function to play AI-generated audio (Ensuring only one plays at a time)
 function playAudio(audioUrl) {
-    const audio = new Audio(audioUrl);
-    audio.play();
+    if (currentAudio) {
+        currentAudio.pause(); // Stop any ongoing audio
+        currentAudio.currentTime = 0;
+    }
+
+    currentAudio = new Audio(audioUrl);
+    currentAudio.play();
 }
 
 // Toggle Roast/Compliment Mode
@@ -98,12 +111,24 @@ function toggleMode() {
         actionBtn.textContent = "Compliment Me";
         actionBtn.onclick = () => generateResponse("compliment");
     }
+
+    // Stop any ongoing speech when switching modes
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+    }
 }
 
 // Toggle Voice Feature
 function toggleVoice() {
     isVoiceEnabled = !isVoiceEnabled;
     voiceToggle.textContent = isVoiceEnabled ? "🔊 Voice On" : "🔇 Voice Off";
+
+    // Stop ongoing speech when turning voice off
+    if (!isVoiceEnabled && currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+    }
 }
 
 // Event Listeners
