@@ -1,0 +1,2 @@
+class face:
+    d
