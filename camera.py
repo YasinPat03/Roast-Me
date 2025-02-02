@@ -1,6 +1,10 @@
+from imutils import face_utils
 import cv2
 import dlib
 
+# State Variables
+xray_b = False
+indices_b = False
 
 cap = cv2.VideoCapture(0)
 
@@ -12,23 +16,42 @@ while True:
     _, frame = cap.read()
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    faces = detector(gray)
+    faces = detector(gray, 0)
+
     for face in faces:
 
-        face_landmarks = predictor(gray, face)
-        
+        shape = predictor(gray, face)
+        shape = face_utils.shape_to_np(shape)
 
-        for n in range(0, 68):
-            x = face_landmarks.part(n).x
-            y = face_landmarks.part(n).y
-            cv2.circle(frame, (x, y), 1, (0, 255, 0), 1)
+        # Assuming `shape` is a list of (x, y) tuples representing facial landmarks
+        for i, (x, y) in enumerate(shape):
+            print(f"Index {i}: ({x}, {y})")  # Prints the index and corresponding (x, y) coordinate
+
+            if indices_b:
+                cv2.putText(frame, str(i), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 1)
+            if xray_b:
+                cv2.circle(frame, (x, y), 2, (0, 255, 0), -1)  
 
 
+
+    # Display the output
     cv2.imshow("Face Landmarks", frame)
 
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    key = cv2.waitKey(1) & 0xFF  # Capture the key only once per frame
+
+    # X-ray Mode Toggle
+    if key == ord('x'):
+        xray_b = not xray_b  # Toggle between True and False
+
+    # Indices Toggle
+    if key == ord('z'):
+        indices_b = not indices_b  # Toggle between True and False
+
+    # Quit the program
+    if key == ord('q'):
         break
+
 
 cap.release()
 cv2.destroyAllWindows()
