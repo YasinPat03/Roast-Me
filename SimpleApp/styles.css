@@ -1,0 +1,196 @@
+/* Default Roast Mode (Red Palette) */
+:root {
+    --bg-color: #200000;
+    --container-bg: #3A0000;
+    --text-color: white;
+    --button-bg: #ff4c4c;
+    --response-bg: #4A0000;
+    --mode-button-bg: #2E4C43;
+}
+
+/* Compliment Mode (Green Palette) */
+.compliment-mode {
+    --bg-color: #1B3D2F;
+    --container-bg: #255A3B;
+    --text-color: white;
+    --button-bg: #4caf50;
+    --response-bg: #2E4C43;
+    --mode-button-bg: #4A0000;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    transition: background-color 0.5s ease-in-out;
+}
+
+.container {
+    width: 700px;
+    max-width: 90%;
+    background: var(--container-bg);
+    padding: 40px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    position: relative;
+    transition: background-color 0.5s ease-in-out, transform 0.3s ease-in-out;
+}
+
+/* Mode Toggle Button */
+.mode-toggle {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.mode-toggle button {
+    background: var(--mode-button-bg);
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.mode-toggle button:active {
+    transform: scale(0.9);
+}
+
+h1 {
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+
+/* Camera Area */
+.camera-container {
+    width: 100%;
+    height: 450px;
+    max-height: 60vh;
+    overflow: hidden;
+    border-radius: 10px;
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    to {
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#cameraError {
+    position: absolute;
+    color: red;
+    font-size: 18px;
+    font-weight: bold;
+    display: none;
+}
+
+.buttons {
+    margin: 20px 0;
+}
+
+/* Main Buttons */
+button {
+    padding: 12px 18px;
+    margin: 10px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    background-color: var(--button-bg);
+    color: white;
+    width: 75%;
+    max-width: 280px;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+/* Response Box */
+.response-box {
+    margin-top: 20px;
+    padding: 20px;
+    background: var(--response-bg);
+    border-radius: 10px;
+    font-size: 18px;
+}
+
+/* Voice Toggle Button (Small & Matches Response Box) */
+.toggle-container {
+    margin-top: 10px;
+}
+
+#voiceToggle {
+    background: var(--response-bg);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    padding: 2px 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+#voiceToggle:hover {
+    opacity: 0.8;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+        padding: 30px;
+    }
+
+    .camera-container {
+        height: 40vh;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 10px;
+        width: 90%;
+    }
+
+    .response-box {
+        font-size: 16px;
+    }
+
+    #voiceToggle {
+        font-size: 12px;
+        padding: 2px 5px;
+    }
+}
