@@ -6,47 +6,79 @@ const responseText = document.getElementById("responseText");
 const voiceToggle = document.getElementById("voiceToggle");
 
 let isRoastMode = true;
-let isVoiceEnabled = true; // Default: Voice enabled
+let isVoiceEnabled = true;
+let currentAudio = null;
+let stream = null;
 
-// ElevenLabs API Key (Use a backend proxy for security!)
+// ElevenLabs API Key
 const API_KEY = "sk_0301a5e5ab5c39edfe24616ecda9ba2e7a9f11af617ebf5d";
 
 // ElevenLabs Voice IDs
 const ROAST_VOICE_ID = "pNInz6obpgDQGcFmaJgB"; // Deep male voice for roasts
 const COMPLIMENT_VOICE_ID = "ErXwobaYiN019PkySvjV"; // Soft female voice for compliments
 
-let currentAudio = null; // Track current audio to prevent duplicates
-
-// Roasts & Compliments Data
-const roasts = [
-    "You bring everyone so much joy... when you leave the room!",
-    "You're like a cloud. When you disappear, it's a beautiful day!",
-    "You're proof that even AI can feel secondhand embarrassment.",
-];
-
-const compliments = [
-    "You light up the room with your smile!",
-    "You're more unique than a rare Pokémon!",
-    "You're not just cool—you're next-level awesome!",
-];
-
-// Function to generate a roast or compliment
-function generateResponse(type) {
-    const list = type === "roast" ? roasts : compliments;
-    const randomIndex = Math.floor(Math.random() * list.length);
-    const response = list[randomIndex];
-
-    responseText.textContent = response;
-
-    // Stop any currently playing voice
-    if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
+// Initialize camera
+async function initCamera() {
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { 
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+            }
+        });
+        video.srcObject = stream;
+    } catch (err) {
+        console.error("Error accessing camera:", err);
+        responseText.textContent = "Error accessing camera. Please make sure you've granted camera permissions.";
     }
+}
 
-    // Call AI Voice Function only if voice is enabled
-    if (isVoiceEnabled) {
-        generateAIVoice(response, type);
+// Function to capture frame and send to server
+async function captureAndAnalyze() {
+    try {
+        // Create a canvas to capture the current frame
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0);
+        
+        // Convert to base64
+        const imageData = canvas.toDataURL('image/jpeg');
+        
+        // Show loading state
+        responseText.textContent = "Analyzing...";
+        actionBtn.disabled = true;
+        
+        // Send to server
+        const response = await fetch('/analyze', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                image: imageData,
+                mode: isRoastMode ? 'roast' : 'compliment'
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        
+        // Display response
+        responseText.textContent = data.response;
+        
+        // Generate voice if enabled
+        if (isVoiceEnabled) {
+            generateAIVoice(data.response, isRoastMode ? 'roast' : 'compliment');
+        }
+    } catch (error) {
+        responseText.textContent = `Error: ${error.message}`;
+    } finally {
+        actionBtn.disabled = false;
     }
 }
 
@@ -79,14 +111,14 @@ async function generateAIVoice(text, type) {
         const audioUrl = URL.createObjectURL(audioBlob);
         playAudio(audioUrl);
     } catch (error) {
-        console.error("Error with AI voice request", error);
+        console.error("Error with AI voice request:", error);
     }
 }
 
-// Function to play AI-generated audio (Ensuring only one plays at a time)
+// Function to play AI-generated audio
 function playAudio(audioUrl) {
     if (currentAudio) {
-        currentAudio.pause(); // Stop any ongoing audio
+        currentAudio.pause();
         currentAudio.currentTime = 0;
     }
 
@@ -103,16 +135,13 @@ function toggleMode() {
         modeSwitch.textContent = "💚";
         modeTitle.textContent = "🔥 Roast Mode 🔥";
         actionBtn.textContent = "Roast Me";
-        actionBtn.onclick = () => generateResponse("roast");
     } else {
         document.body.classList.add("compliment-mode");
         modeSwitch.textContent = "🔥";
         modeTitle.textContent = "💚 Compliment Mode 💚";
         actionBtn.textContent = "Compliment Me";
-        actionBtn.onclick = () => generateResponse("compliment");
     }
 
-    // Stop any ongoing speech when switching modes
     if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
@@ -124,7 +153,6 @@ function toggleVoice() {
     isVoiceEnabled = !isVoiceEnabled;
     voiceToggle.textContent = isVoiceEnabled ? "🔊 Voice On" : "🔇 Voice Off";
 
-    // Stop ongoing speech when turning voice off
     if (!isVoiceEnabled && currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
@@ -133,5 +161,8 @@ function toggleVoice() {
 
 // Event Listeners
 modeSwitch.addEventListener("click", toggleMode);
-actionBtn.addEventListener("click", () => generateResponse(isRoastMode ? "roast" : "compliment"));
+actionBtn.addEventListener("click", captureAndAnalyze);
 voiceToggle.addEventListener("click", toggleVoice);
+
+// Initialize camera on load
+initCamera();
