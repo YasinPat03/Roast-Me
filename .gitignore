@@ -170,4 +170,5 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+# OPENAI key configuration file
 config.py
