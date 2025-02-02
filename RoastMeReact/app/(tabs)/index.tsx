@@ -1,45 +1,62 @@
-import { Image, StyleSheet, Platform,Pressable,Text,SafeAreaView} from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
+import { StyleSheet, Platform, Pressable, Text, SafeAreaView } from 'react-native';
+import { useState } from 'react';
+import CameraComponent from '@/components/CameraComponent';
 import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/ThemedText';
 
 export default function HomeScreen() {
+  const [showCamera, setShowCamera] = useState(false);
+  
+  const handlePhotoTaken = (uri: string) => {
+    console.log('Photo taken:', uri);
+    setShowCamera(false);
+    // Handle the photo URI here - maybe show it in your UI
+  };
+
+  if (showCamera) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <CameraComponent 
+          onPhotoTaken={handlePhotoTaken}
+          onClose={() => setShowCamera(false)}
+        />
+      </SafeAreaView>
+    );
+  }
+
   return (
-<SafeAreaView><Pressable style={styles.button}>
-      <Text style={styles.text}>Roast Me!</Text>
-    </Pressable></SafeAreaView>
-    
+    <ThemedView style={styles.container}>
+      <ThemedText style={styles.title}>Welcome</ThemedText>
+      <Pressable 
+        style={styles.button}
+        onPress={() => setShowCamera(true)}
+      >
+        <Text style={styles.buttonText}>Open Camera</Text>
+      </Pressable>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    padding: 15,
+    borderRadius: 10,
+    margin: 20,
     alignItems: 'center',
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-  text:{
-    color:"black",
-  },
-  button:{
-    width:50,
-    height:20,
-    backgroundColor:"white",
-    justifyContent:"center",
-    alignItems:"center",
-    display:"flex",
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   }
 });
