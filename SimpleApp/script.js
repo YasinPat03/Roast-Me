@@ -12,8 +12,8 @@ let isVoiceEnabled = true; // Default: Voice enabled
 const API_KEY = "sk_0301a5e5ab5c39edfe24616ecda9ba2e7a9f11af617ebf5d";
 
 // ElevenLabs Voice IDs
-const ROAST_VOICE_ID = "EXAVITQu4vr4xnSDxMaL"; // Deep male voice for roasts
-const COMPLIMENT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // Soft female voice for compliments
+const ROAST_VOICE_ID = "pNInz6obpgDQGcFmaJgB"; // Deep male voice for roasts
+const COMPLIMENT_VOICE_ID = "ErXwobaYiN019PkySvjV"; // Soft female voice for compliments
 
 let currentAudio = null; // Track current audio to prevent duplicates
 
