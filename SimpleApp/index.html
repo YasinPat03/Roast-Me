@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self-Roasting App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="mode-toggle">
+            <button id="modeSwitch">💚</button>
+        </div>
+
+        <h1 id="modeTitle">🔥 Roast Mode 🔥</h1>
+        <div class="camera-container">
+            <video id="camera" autoplay playsinline></video>
+            <p id="cameraError">Camera access is needed to run this app.</p>
+        </div>
+        <div class="buttons">
+            <button id="actionBtn">Roast Me</button>
+        </div>
+        <div class="response-box">
+            <p id="responseText">Your roast or compliment will appear here!</p>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
